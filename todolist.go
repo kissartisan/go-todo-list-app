@@ -63,6 +63,26 @@ func UpdateItem(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func DeleteItem(w http.ResponseWriter, r *http.Request) {
+	// Get URL parameter from mux
+	vars := mux.Vars(r)
+	id, _ := strconv.Atoi(vars["id"])
+
+	// Test if the TodoItem exist in DB
+	err := GetItemByID(id)
+	if err == false {
+		w.Header().Set("Content-Type", "application/json")
+		io.WriteString(w, `{"deleted": false, "error": "Record Not Found"}`)
+	} else {
+		log.WithFields(log.Fields{"Id": id}).Info("Deleting TodoItem")
+		todo := &TodoItemModel{}
+		db.First(&todo, id)
+		db.Delete(&todo)
+		w.Header().Set("Content-Type", "application/json")
+		io.WriteString(w, `{"deleted": true}`)
+	}
+}
+
 func GetItemByID(Id int) bool {
 	todo := &TodoItemModel{}
 	result := db.First(&todo, Id)
