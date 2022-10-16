@@ -132,7 +132,7 @@ func main() {
 	router.HandleFunc("/todo-incomplete", GetIncompleteItems).Methods("GET")
 	router.HandleFunc("/todo", CreateItem).Methods("POST")
 	router.HandleFunc("/todo/{id}", UpdateItem).Methods("POST")
-	router.HandleFunc("/todo/{id}", DeleteItem).Methods("DELETE")
+	router.HandleFunc("/todo/{id}", DeleteItem).MAethods("DELETE")
 	http.ListenAndServe(":8000", router)
 
 	handler := cors.New(cors.Options{
