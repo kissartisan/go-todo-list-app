@@ -30,6 +30,8 @@ func Healthz(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateItem(w http.ResponseWriter, r *http.Request) {
+	allowAccessOrigin(w, "*")
+
 	description := r.FormValue("description")
 	log.WithFields(log.Fields{"description": description}).Info("Add new TodoItem. Saving to database.")
 	todo := &TodoItemModel{Description: description, Completed: false}
@@ -40,6 +42,8 @@ func CreateItem(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateItem(w http.ResponseWriter, r *http.Request) {
+	allowAccessOrigin(w, "*")
+
 	// Get URL parameter from mux
 	vars := mux.Vars(r)
 	id, _ := strconv.Atoi(vars["id"])
@@ -63,6 +67,8 @@ func UpdateItem(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteItem(w http.ResponseWriter, r *http.Request) {
+	allowAccessOrigin(w, "*")
+
 	// Get URL parameter from mux
 	vars := mux.Vars(r)
 	id, _ := strconv.Atoi(vars["id"])
@@ -93,6 +99,8 @@ func GetItemByID(Id int) bool {
 }
 
 func GetCompletedItems(w http.ResponseWriter, r *http.Request) {
+	allowAccessOrigin(w, "*")
+
 	log.Info("Get completed TodoItems")
 	completedTodoItems := GetTodoItems(true)
 	w.Header().Set("Content-Type", "application/json")
@@ -100,6 +108,8 @@ func GetCompletedItems(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetIncompleteItems(w http.ResponseWriter, r *http.Request) {
+	allowAccessOrigin(w, "*")
+
 	log.Info("Get Incomplete TodoItems")
 	IncompleteTodoItems := GetTodoItems(false)
 	w.Header().Set("Content-Type", "application/json")
@@ -117,6 +127,12 @@ func init() {
 	log.SetReportCaller(true)
 }
 
+func allowAccessOrigin(w http.ResponseWriter, methodName string) {
+	// Allow CORS here by the given origin
+	w.Header().Set("Access-Control-Allow-Origin", methodName)
+	w.Header().Set("Access-Control-Allow-Methods", methodName)
+}
+
 func main() {
 	defer db.Close()
 
@@ -130,7 +146,7 @@ func main() {
 	router.HandleFunc("/todo-incomplete", GetIncompleteItems).Methods("GET")
 	router.HandleFunc("/todo", CreateItem).Methods("POST")
 	router.HandleFunc("/todo/{id}", UpdateItem).Methods("POST")
-	router.HandleFunc("/todo/{id}", DeleteItem).Methods("DELETE")
+	router.HandleFunc("/todo/{id}", DeleteItem).Methods("DELETE", "OPTIONS")
 	http.ListenAndServe(":8000", router)
 
 	handler := cors.New(cors.Options{
