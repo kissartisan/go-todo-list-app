@@ -7,8 +7,6 @@ import (
 
 	"encoding/json"
 
-	_ "strconv"
-
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
