@@ -13,6 +13,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/rs/cors"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -135,7 +136,7 @@ func main() {
 	http.ListenAndServe(":8000", router)
 
 	handler := cors.New(cors.Options{
-		AllowedMethods: []string{"GET", "POST", "DELETE", "PATCH", "OPTIONS"}
+		AllowedMethods: []string{"GET", "POST", "DELETE", "PATCH", "OPTIONS"},
 	}).Handler(router)
 
 	http.ListenAndServe(":8000", handler)
